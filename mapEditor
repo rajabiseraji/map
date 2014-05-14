@@ -1,0 +1,230 @@
+package mapEditor;
+
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.ScrollPane;
+import java.awt.Scrollbar;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.RasterFormatException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Vector;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.text.html.ImageView;
+
+public class MainFrame extends JDialog {
+	private JPanel rightPanel,leftPanel;
+	private int Rx,Ry,Rw,Rh,Lx,Ly,Lw,Lh,labelH,labelW,buttonsWidth,buttonsHeight;
+	private int Width,Height,X,Y,buttonVSpacing,buttonHSpacing;
+	private int ImageX,ImageY;
+	private int[][] map;
+	private Buttons tree,waterButton,water2Button,grassButton;
+	public BufferedImage image,image2,image3;
+	private Vector<Image> img=new Vector<Image>();
+	private Graphics2D g2;
+	private JTextField hidden;
+	private double scale;
+	public MainFrame() {
+	
+		
+		init();
+		setLayout(null);
+		createLeftPanel();
+		createRightPanel();
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	}
+	private void init() {
+		Width=1000;
+		Height=700;
+		X=100;
+		Y=50;
+		Rw=200;
+		Rx=Width-Rw-20;
+		Ry=10;
+		Rh=Height-50;
+		Lx=0;
+		Ly=Ry;
+		Lw=Width-Rw-20;
+		Lh=Rh;
+		ImageX=ImageY=0;		
+		
+//		map=new int[78][65];
+		
+		try {
+			image3=ImageIO.read(new File("E:\\icon\\water.png"));
+			image=ImageIO.read(new File("E:\\icon\\grid.jpg"));
+			System.out.println(image.getWidth()+" " +image.getHeight());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		hidden=new JTextField();
+		hidden.addKeyListener(new KeyListener() {
+			
+			
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				System.out.println("saj");
+				if(arg0.getKeyCode()==KeyEvent.VK_UP){
+					if(ImageY>0){
+						ImageY-=10;
+						System.out.println("UP");
+					}
+				}else if(arg0.getKeyCode()==KeyEvent.VK_DOWN){
+					if(ImageY+(Lh-20)*scale+10<image.getHeight()){
+						System.out.println(ImageY);
+						ImageY+=10;
+					}
+				}else if(arg0.getKeyCode()==KeyEvent.VK_LEFT){
+					if(ImageX>0)
+						ImageX-=10;
+				}else if(arg0.getKeyCode()==KeyEvent.VK_RIGHT){
+					if(ImageX+(Lw-20)*scale+10<image.getWidth())
+						ImageX+=10;
+				}else if(arg0.getKeyCode()==KeyEvent.VK_SPACE){
+					if(ImageX+(Lw-20)*scale+10<image.getWidth()){
+					scale*=2;
+					System.out.println(scale);
+					}
+				}else if(arg0.getKeyCode()==KeyEvent.VK_ESCAPE){
+						if(scale>0.125)
+						scale/=2;
+						System.out.println(scale);
+						
+				}
+				g2=image2.createGraphics();
+
+				System.out.println(ImageX+" "+ImageY+" ");
+				Image im=null;
+				
+				try{
+				im=image.getSubimage(ImageX, ImageY, (int)((Lw-20)*scale), (int)((Lh-20)*scale));}
+				catch(RasterFormatException e){
+					ImageX=ImageY=0;
+					im=image.getSubimage(ImageX, ImageY, (int)((Lw-20)*scale), (int)((Lh-20)*scale));
+					
+				}
+
+				g2.drawImage(im, 0, 0,Lw-20,Lh-20, null);
+				for(int i=0;i<img.size();i++){
+					
+					g2.drawImage(img.elementAt(i), 50+60*i,60+60*i,(int)((50+60*i)/scale),(int)((60+60*i)/scale),null);
+				}
+				leftPanel.repaint();
+//				leftPanel.paintAll(g2);
+			}
+		});
+		
+		
+		
+		img.add(image3);
+		image2=new BufferedImage(Lw,Lh, BufferedImage.TYPE_4BYTE_ABGR);
+		g2=image2.createGraphics();
+		g2.drawImage(image.getSubimage(ImageX, ImageY, (int)((Lw-20)*scale), (int)((Lh-20)*scale)), 0, 0,Lw-20,Lh-20, null);
+		
+		buttonsWidth=buttonsHeight=80;
+		buttonVSpacing=buttonsHeight+10;
+		buttonHSpacing=buttonVSpacing;
+		setSize(Width,Height);
+		setLocation(X,Y);
+		setVisible(true);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+	}
+	
+	
+	private void createRightPanel() {
+		rightPanel=new JPanel();
+		rightPanel.setSize(Rw,Rh);
+		rightPanel.setLocation(Rx, Ry);
+		rightPanel.setVisible(true);
+		rightPanel.setLayout(new FlowLayout());
+//		rightPanel.setBackground(Color.green);
+		rightPanel.setBorder(BorderFactory.createTitledBorder("RightPanel"));
+		
+		
+		tree=new Buttons(10, 15, buttonsWidth, buttonsHeight,1);
+		rightPanel.add(tree);
+		
+		waterButton=new Buttons(10+buttonHSpacing, 15, buttonsWidth, buttonsHeight,0);
+		rightPanel.add(waterButton);
+		
+		water2Button=new Buttons(10, 15+buttonVSpacing, buttonsWidth, buttonsHeight,2);
+		rightPanel.add(water2Button);
+		
+		grassButton=new Buttons(10+buttonHSpacing,15+buttonVSpacing, buttonsWidth, buttonsHeight,3);
+		rightPanel.add(grassButton);
+
+		rightPanel.setFocusable(false);
+		
+		getContentPane().add(rightPanel);
+		repaint();
+	}
+	private void createLeftPanel() {
+		
+		
+		leftPanel=new JPanel(){
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+				g.drawImage(image2,10,15,Lw-20,Lh-10,null);
+			}
+		};
+		leftPanel.setSize(Lw,Lh);
+//		leftPanel.setBackground(Color.red);
+		leftPanel.setLocation(Lx, Ly);
+		leftPanel.setVisible(true);
+		leftPanel.setLayout(null);
+		leftPanel.setBorder(BorderFactory.createTitledBorder("MapPanel"));
+		getContentPane().add(hidden);
+		
+		try {
+			Map map=new Map(60, 60, leftPanel.WIDTH, leftPanel.HEIGHT, image);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for(int i=0;i<img.size();i++){
+			g2.drawImage(img.elementAt(i), 50+60*i,60+60*i,null);
+		}
+		leftPanel.repaint();
+		leftPanel.setFocusable(false);
+		getContentPane().add(leftPanel);
+		repaint();
+	}
+	
+}
