@@ -1,0 +1,74 @@
+package mapEditor;
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Vector;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class Map {
+	private int Width,Height,AvailableWidth,AvailableHeight;
+	private int[][] map;
+	private final int EMPTY=0,GRASS=1,DWATER=2,SWATER=3,TREE=4;
+	private final String[] text={"Right","Left","Up","Down"};
+	private BufferedImage mapImage;
+	private JLabel lab1;
+	private BufferedImage image,image2;
+	
+	
+	
+	public Map(int Width,int Height,int Aw,int Ah,BufferedImage image) throws IOException{
+		this.Width=Width;
+		this.Height=Height;
+		AvailableHeight=Ah;
+		AvailableWidth=Aw;
+		this.image=image;
+		map=new int[Width][Height];
+		initMap();
+		
+		
+	}
+	
+	private void initMap() throws IOException{
+			
+		for(int i=0;i<Width;i++){
+			for(int j=0;j<Height;j++){
+				map[i][j]=EMPTY;
+			}
+		}
+		
+//		image2=new BufferedImage(60, 60, BufferedImage.TYPE_4BYTE_ABGR);
+//		image2=ImageIO.read(new File("E:\\icon\\tree.png"));
+		Graphics g=image.getGraphics();
+//		g.drawImage(new ImageIcon("E:\\icon\\tree.png").getImage(), 0, 0, null);
+		
+	}
+	private void changeMap(int i,int j,int type){
+		map[i][j]=type;
+		loadMap();
+	}
+	
+	private void moveMap(int direction){
+		
+	}
+	
+	private void loadMap(){
+		
+	}
+	
+	public void listen(String Message){
+		for(int i=0;i<text.length;i++){
+			if(text[i].equals(Message))
+				moveMap(i);
+		}
+	}
+	
+
+}
