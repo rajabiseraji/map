@@ -1,0 +1,29 @@
+package mapEditor;
+
+import java.awt.Graphics;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+public class Buttons extends JButton {
+	private static ImageIcon[] icon={new ImageIcon("E:\\icon\\water.png"),new ImageIcon("E:\\icon\\tree.png"),new ImageIcon("E:\\icon\\water.png"),new ImageIcon("E:\\icon\\grass2.png")};
+	private String[] text={"D.Water","Tree","S.water","Grass"};
+	private int x,y,w,h,type;
+	public Buttons(int x,int y,int w,int h,int type) {
+		this.x=x;this.y=y;this.w=w;this.h=h;this.type=type;
+		init();
+	}
+	private void init() {
+		setSize(w,h);
+		setLocation(x, y);
+		setText(text[type]);
+		setIcon(icon[type]);
+		setVerticalTextPosition(SwingUtilities.BOTTOM);
+		setHorizontalTextPosition(SwingConstants.CENTER);
+		setFocusable(false);
+		
+	}
+	
+}
